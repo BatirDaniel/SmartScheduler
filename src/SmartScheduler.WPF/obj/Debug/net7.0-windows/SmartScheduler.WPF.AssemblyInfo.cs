@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartScheduler.WPF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+93b81fc4598897247b2da94c8722b543ef1b3c91")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f30102d72726e55bcc4091082f155a1a169bf6ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartScheduler.WPF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartScheduler.WPF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
