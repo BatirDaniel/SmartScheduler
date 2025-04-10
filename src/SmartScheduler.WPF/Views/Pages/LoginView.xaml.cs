@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace SmartScheduler.WPF.Views.Pages
 {
@@ -13,8 +13,10 @@ namespace SmartScheduler.WPF.Views.Pages
             InitializeComponent();
         }
 
-        private void ColumnDefinition_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        private void TextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            RegisterView registerPage = new RegisterView();
+            NavigationService?.Navigate(registerPage);
         }
     }
 }

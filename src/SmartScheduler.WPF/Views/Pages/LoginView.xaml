@@ -85,7 +85,8 @@
                            Foreground="#5B78F6"
                            FontSize="12"
                            TextDecorations="Underline"
-                           Cursor="Hand" />
+                           Cursor="Hand"
+                           MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
@@ -100,7 +101,7 @@
                Width="586"
                Height="437"
                HorizontalAlignment="Center"
-               VerticalAlignment="Top" Margin="0,134,0,0" />
+               VerticalAlignment="Top" Margin="0,110,0,0" />
             </Grid>
         </Grid>
     </Border>
