@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Acer\\Desktop\\IAFPS\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj": {}
+    "C:\\Users\\danie\\OneDrive\\Desktop\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Acer\\Desktop\\IAFPS\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj": {
+    "C:\\Users\\danie\\OneDrive\\Desktop\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Acer\\Desktop\\IAFPS\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj",
+        "projectUniqueName": "C:\\Users\\danie\\OneDrive\\Desktop\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj",
         "projectName": "SmartScheduler.WPF",
-        "projectPath": "C:\\Users\\Acer\\Desktop\\IAFPS\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj",
-        "packagesPath": "C:\\Users\\Acer\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Acer\\Desktop\\IAFPS\\SmartScheduler\\src\\SmartScheduler.WPF\\obj\\",
+        "projectPath": "C:\\Users\\danie\\OneDrive\\Desktop\\SmartScheduler\\src\\SmartScheduler.WPF\\SmartScheduler.WPF.csproj",
+        "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\danie\\OneDrive\\Desktop\\SmartScheduler\\src\\SmartScheduler.WPF\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Acer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -35,11 +39,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -63,6 +62,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[7.0.20, )"
+            },
+            "WPF-UI": {
+              "target": "Package",
+              "version": "[4.0.2, )"
             }
           },
           "imports": [
@@ -76,24 +79,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[7.0.20, 7.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[7.0.20, 7.0.20]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[7.0.20, 7.0.20]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[7.0.20, 7.0.20]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -102,7 +87,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }

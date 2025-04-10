@@ -1,17 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartScheduler.WPF.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartScheduler.WPF.Repository.Implementations
 {
     public class SmartSchedulerRepository : ISmartSchedulerRepository
     {
+        private SmartSchedulerContext _context;
 
-        SmartSchedulerContext _context;
+        public SmartSchedulerRepository()
+        {
+            _context = SmartSchedulerContext.GetInstance();
+        }
 
         public TaskModel AddTask(TaskModel task)
         {
@@ -76,6 +77,4 @@ namespace SmartScheduler.WPF.Repository.Implementations
             return true;
         }
     }
-
 }
-

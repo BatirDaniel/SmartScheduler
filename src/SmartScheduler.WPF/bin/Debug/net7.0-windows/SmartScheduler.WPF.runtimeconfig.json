@@ -12,8 +12,7 @@
       }
     ],
     "configProperties": {
-      "System.Reflection.NullabilityInfoContext.IsSupported": true,
-      "System.Runtime.Serialization.EnableUnsafeBinaryFormatterSerialization": true
+      "System.Reflection.NullabilityInfoContext.IsSupported": true
     }
   }
 }

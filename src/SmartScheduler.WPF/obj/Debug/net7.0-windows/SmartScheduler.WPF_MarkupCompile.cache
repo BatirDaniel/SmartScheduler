@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\Acer\Desktop\IAFPS\SmartScheduler\src\SmartScheduler.WPF\obj\Debug\net7.0-windows\
+C:\Users\danie\OneDrive\Desktop\SmartScheduler\src\SmartScheduler.WPF\obj\Debug\net7.0-windows\
 SmartScheduler.WPF
 none
 false
 TRACE;DEBUG;NET;NET7_0;NETCOREAPP
-C:\Users\Acer\Desktop\IAFPS\SmartScheduler\src\SmartScheduler.WPF\App.xaml
-11407045341
+C:\Users\danie\OneDrive\Desktop\SmartScheduler\src\SmartScheduler.WPF\App.xaml
+12103033831
 
-26-661721461
-2171482708332
-MainWindow.xaml;
+35-1607880303
+219233783130
+MainWindow.xaml;Resources\Styles\Controls.xaml;Resources\Themes\LightTheme.xaml;Views\Modals\AddFreeTimeModal.xaml;Views\Modals\AddTaskModal.xaml;Views\Modals\ProfileModal.xaml;Views\Pages\DashboardView.xaml;Views\Pages\FreeTimeView.xaml;Views\Pages\HobbiesView.xaml;Views\Pages\LoginView.xaml;Views\Pages\RegisterView.xaml;Views\Pages\TasksView.xaml;
 
 False
 
