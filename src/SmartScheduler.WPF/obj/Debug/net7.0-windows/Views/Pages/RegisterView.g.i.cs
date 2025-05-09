@@ -97,7 +97,7 @@ namespace SmartScheduler.WPF.Views.Pages {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/SmartScheduler.WPF;V1.0.0.0;component/views/pages/registerview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/SmartScheduler.WPF;component/views/pages/registerview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\Views\Pages\RegisterView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

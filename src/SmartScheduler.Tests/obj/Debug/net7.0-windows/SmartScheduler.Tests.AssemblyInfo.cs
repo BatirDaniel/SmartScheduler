@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SmartScheduler.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e24501f91f693c357e2a3114f1fa980d48c41592")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0dd3160f95f4be04c89d304c3fe5a5e3556ee16b")]
 [assembly: System.Reflection.AssemblyProductAttribute("SmartScheduler.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SmartScheduler.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

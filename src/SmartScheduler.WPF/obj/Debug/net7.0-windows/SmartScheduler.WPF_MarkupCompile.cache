@@ -12,7 +12,7 @@ TRACE;DEBUG;NET;NET7_0;NETCOREAPP
 C:\Users\Acer\Desktop\IAFPS\SmartScheduler\src\SmartScheduler.WPF\App.xaml
 12103033831
 
-41-237980986
+40-211437248
 2191385895221
 MainWindow.xaml;Resources\Styles\Controls.xaml;Resources\Themes\LightTheme.xaml;Views\Modals\AddFreeTimeModal.xaml;Views\Modals\AddTaskModal.xaml;Views\Modals\ProfileModal.xaml;Views\Pages\DashboardView.xaml;Views\Pages\FreeTimeView.xaml;Views\Pages\HobbiesView.xaml;Views\Pages\LoginView.xaml;Views\Pages\RegisterView.xaml;Views\Pages\TasksView.xaml;
 

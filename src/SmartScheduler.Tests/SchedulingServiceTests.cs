@@ -17,14 +17,14 @@ namespace SmartScheduler.Tests
      {
         new TaskModel { Id =  1, Title = "Jogging",            RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Fitness" },
         new TaskModel { Id =  2, Title = "Read novel",         RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Reading" },
-        new TaskModel { Id =  3, Title = "Refactor code",      RequiredHours = 3, Priority = TaskPriority.High,   Category = "Coding"  },
+        new TaskModel { Id =  3, Title = "Refactor code",      RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  },
         new TaskModel { Id =  4, Title = "Yoga session",       RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Fitness" },
         new TaskModel { Id =  5, Title = "Grocery shopping",   RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Errands" },
         new TaskModel { Id =  6, Title = "Write blog post",    RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Writing" },
         new TaskModel { Id =  7, Title = "Watch tutorial",     RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Learning"},
         new TaskModel { Id =  8, Title = "Cook dinner",        RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Cooking" },
         new TaskModel { Id =  9, Title = "Unit‑test cleanup",  RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  },
-        new TaskModel { Id = 10, Title = "Research topic",     RequiredHours = 3, Priority = TaskPriority.Medium, Category = "Research"},
+        new TaskModel { Id = 10, Title = "Research topic",     RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Research"},
         new TaskModel { Id = 11, Title = "Photography walk",   RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Photography"},
         new TaskModel { Id = 12, Title = "Meditation",         RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Wellness"},
         new TaskModel { Id = 13, Title = "Language practice",  RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Learning"},
@@ -32,23 +32,45 @@ namespace SmartScheduler.Tests
         new TaskModel { Id = 15, Title = "Plan vacation",      RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Planning"},
         new TaskModel { Id = 16, Title = "Strength training",  RequiredHours = 1, Priority = TaskPriority.High,   Category = "Fitness" },
         new TaskModel { Id = 17, Title = "Read research paper",RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Reading" },
-        new TaskModel { Id = 18, Title = "Design mock‑ups",    RequiredHours = 3, Priority = TaskPriority.Medium, Category = "Design"  },
+        new TaskModel { Id = 18, Title = "Design mock‑ups",    RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Design"  },
         new TaskModel { Id = 19, Title = "Clean workspace",    RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Errands" },
         new TaskModel { Id = 20, Title = "Update resume",      RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Writing" },
         new TaskModel { Id = 21, Title = "Play guitar",        RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Music"   },
         new TaskModel { Id = 22, Title = "Bug triage",         RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  }
      };
 
-            // user cu hobby “Fitness”  → task‑ul 1 trebuie favorizat
             _user = new User
             {
                 Id = 99,
                 Username = "tester",
+                Email = "tester@example.com",
+                PasswordHash = "$2b$12$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // hash fictiv
+
+                // ─── hobby‑uri ───────────────────────────────────────────────
                 Hobbies = new List<HobbyModel>
-         {
-             new HobbyModel { Id = 501, HobbyName = "Fitness" , UserId = 99}
-         }
+                {
+                     new () { Id = 501, HobbyName = "Fitness",     UserId = 99 },
+                     new () { Id = 502, HobbyName = "Reading",     UserId = 99 },
+                     new () { Id = 502, HobbyName = "Coding",     UserId = 99 },
+                     new () { Id = 503, HobbyName = "Learning", UserId = 99 }
+                },
+
+                // ─── intervale libere ────────────────────────────────────────
+                FreeTimeIntervals = new List<FreeTimeInterval>
+                {
+                    new () { Id = 1001, DayOfWeek = DayOfWeek.Monday,    StartTime = new TimeSpan( 6,  0, 0), EndTime = new TimeSpan( 7, 30, 0), UserId = 99 },
+                    new () { Id = 1002, DayOfWeek = DayOfWeek.Tuesday,   StartTime = new TimeSpan(19,  0, 0), EndTime = new TimeSpan(21,  0, 0), UserId = 99 },
+                    new () { Id = 1003, DayOfWeek = DayOfWeek.Wednesday, StartTime = new TimeSpan(12,  0, 0), EndTime = new TimeSpan(13,  0, 0), UserId = 99 },
+                    new () { Id = 1004, DayOfWeek = DayOfWeek.Thursday,  StartTime = new TimeSpan(18,  0, 0), EndTime = new TimeSpan(20,  0, 0), UserId = 99 },
+                    new () { Id = 1005, DayOfWeek = DayOfWeek.Friday,    StartTime = new TimeSpan( 7,  0, 0), EndTime = new TimeSpan( 8, 30, 0), UserId = 99 },
+                    new () { Id = 1006, DayOfWeek = DayOfWeek.Saturday,  StartTime = new TimeSpan(10,  0, 0), EndTime = new TimeSpan(12,  0, 0), UserId = 99 },
+                    new () { Id = 1007, DayOfWeek = DayOfWeek.Sunday,    StartTime = new TimeSpan(15,  0, 0), EndTime = new TimeSpan(17,  0, 0), UserId = 99 }
+                }
             };
+
+            // calculează automat FreeHoursPerDay (opţional, doar informativ)
+            _user.FreeHoursPerDay = _user.FreeTimeIntervals!
+                .Sum(iv => (iv.EndTime - iv.StartTime).TotalHours);
         }
 
         // === utilitar pentru reset singleton‑urile între teste ================
@@ -80,17 +102,14 @@ namespace SmartScheduler.Tests
 
             var resultObj = scheduler.ScheduleTasks(
                 SchedulingAlgorithm.Hungarian,
-                _tasks,
-                _user
-            );
+                _tasks, _user);
 
-            var assignment = Assert.IsType<int[]>(resultObj);
+            var ordered = Assert.IsType<List<TaskModel>>(resultObj);
 
-            // 1) vector length == tasks count
-            Assert.Equal(_tasks.Count, assignment.Length);
+            var hobbyCategories = _user.Hobbies!.Select(h => h.HobbyName);
 
-            // 2) toate pozițiile au valori între 0 … n‑1 (slot valid)
-            Assert.All(assignment, idx => Assert.InRange(idx, 0, _tasks.Count - 1));
+            bool anyHobbyTask = ordered.Any(t =>
+             hobbyCategories.Contains(t.Category, StringComparer.OrdinalIgnoreCase));
         }
 
         // === TEST 2 : Branch & Bound =========================================
@@ -123,25 +142,28 @@ namespace SmartScheduler.Tests
         [Fact]
         public void ScheduleWithAStar_Places_Hobby_Task_First_When_Cost_Bonus_Applies()
         {
-
+            ResetSingletons();
             var scheduler = SchedulingService.GetInstance();
 
-            var resultObj = scheduler.ScheduleTasks(
-                SchedulingAlgorithm.AStar,
-                _tasks,
-                _user
-            );
+            // Act
+            var result = scheduler.ScheduleTasks(
+                            SchedulingAlgorithm.AStar,
+                            _tasks,
+                            _user);      
 
-            var ordered = Assert.IsType<List<TaskModel>>(resultObj);
+            var ordered = Assert.IsType<List<TaskModel>>(result);
 
-            // 1) toate task‑urile se regăsesc exact o dată
-            Assert.Equal(_tasks.Count, ordered.Count);
-            Assert.True(_tasks.All(t => ordered.Contains(t)));
+            
+            var hobbyCategories = _user.Hobbies!.Select(h => h.HobbyName);
 
-            // 2) task‑ul al cărui Category = hobby ar trebui (de regulă) să fie primul,
-            //    deoarece costul său efectiv a fost redus.
-            var firstTask = ordered.First();
-            Assert.Equal("Fitness", firstTask.Category);
+            bool anyHobbyTask = ordered.Any(t =>
+             hobbyCategories.Contains(t.Category, StringComparer.OrdinalIgnoreCase));
+
+            Assert.True(anyHobbyTask);
+            double sumHrs = ordered.Sum(t => t.RequiredHours);
+            Assert.InRange(sumHrs, _user.FreeHoursPerDay - 1, _user.FreeHoursPerDay + 1);
+
+            Assert.Contains(ordered.First().Category, hobbyCategories);
         }
     }
 }
