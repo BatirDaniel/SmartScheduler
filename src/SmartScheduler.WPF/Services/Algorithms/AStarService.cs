@@ -33,88 +33,53 @@ namespace SmartScheduler.WPF.Services.Algorithms
         /// <param name="allTasks">Sarcinile de planificat (ex. toate tasks din DB)</param>
         /// <param name="user">Utilizatorul curent (pentru a vedea hobby-urile)</param>
         /// <returns>O listă de TaskModel în ordinea optimă găsită</returns>
-        public List<TaskModel> FindOptimalTaskOrderWithHobby(List<TaskModel> allTasks, User user)
+        public List<TaskModel> FindOptimalTaskOrderWithHobby(
+             List<TaskModel> allTasks, User user)
         {
-            // 1) Creăm nodul "start": nicio sarcină completată, cost 0
-            var startNode = new AStarNode
+            // nod start
+            var start = new AStarNode
             {
                 TasksDone = new List<TaskModel>(),
                 GCost = 0,
                 HCost = CalculateHeuristic(allTasks, new List<TaskModel>(), user)
             };
-            startNode.CalculateFCost();
+            start.CalculateFCost();
 
-            // "openList": noduri care așteaptă să fie explorate
-            var openList = new List<AStarNode> { startNode };
-            // "closedList": noduri deja vizitate
-            var closedList = new HashSet<AStarNode>(new AStarNodeComparer());
+            // ---------- PriorityQueue în loc de List + Sort -----------------
+            var open = new PriorityQueue<AStarNode, double>();
+            open.Enqueue(start, start.FCost);
 
-            while (openList.Count > 0)
+            var closed = new HashSet<AStarNode>(new AStarNodeComparer());
+
+            while (open.Count > 0)
             {
-                // 2) Alegem nodul cu FCost minim
-                openList.Sort((a, b) => a.FCost.CompareTo(b.FCost));
-                var currentNode = openList[0];
+                var current = open.Dequeue();
 
-                // Dacă am inclus toate sarcinile (TasksDone = allTasks), suntem gata
-                if (currentNode.TasksDone.Count == allTasks.Count)
+                if (current.TasksDone.Count == allTasks.Count)
+                    return current.TasksDone;
+
+                closed.Add(current);
+
+                // succesorii
+                foreach (var t in allTasks.Where(t => !current.TasksDone.Contains(t)))
                 {
-                    // Returnăm ordinea completă
-                    return currentNode.TasksDone;
-                }
+                    var newDone = current.TasksDone.Append(t).ToList();
 
-                // Mutăm nodul din openList în closedList
-                openList.RemoveAt(0);
-                closedList.Add(currentNode);
-
-                // 3) Generăm succesorii: adăugăm câte 1 task nou din cele nefinalizate
-                var remainingTasks = allTasks
-                    .Where(t => !currentNode.TasksDone.Contains(t))
-                    .ToList();
-
-                foreach (var nextTask in remainingTasks)
-                {
-                    // Creăm noul "TasksDone"
-                    var newTasksDone = new List<TaskModel>(currentNode.TasksDone);
-                    newTasksDone.Add(nextTask);
-
-                    // Calculăm GCost = cost parcurs până acum + costul nextTask
-                    double g = currentNode.GCost + CalculateCost(nextTask, user);
-
-                    var successor = new AStarNode
+                    var succ = new AStarNode
                     {
-                        TasksDone = newTasksDone,
-                        GCost = g,
-                        HCost = CalculateHeuristic(allTasks, newTasksDone, user),
-                        Parent = currentNode
+                        TasksDone = newDone,
+                        GCost = current.GCost + CalculateCost(t, user),
+                        HCost = CalculateHeuristic(allTasks, newDone, user),
+                        Parent = current
                     };
-                    successor.CalculateFCost();
+                    succ.CalculateFCost();
 
-                    // 4) Verificăm dacă e deja în closedList cu un cost mai bun
-                    if (closedList.Contains(successor))
-                        continue;
+                    if (closed.Contains(succ)) continue;
 
-                    // Verificăm dacă există deja un nod identic în openList
-                    var existing = openList.FirstOrDefault(n => n.Equals(successor));
-                    if (existing == null)
-                    {
-                        // Nu există => îl adăugăm
-                        openList.Add(successor);
-                    }
-                    else
-                    {
-                        // Există, dar dacă successor are un GCost mai mic, îl "upgrade"
-                        if (successor.GCost < existing.GCost)
-                        {
-                            existing.GCost = successor.GCost;
-                            existing.Parent = currentNode;
-                            existing.CalculateFCost();
-                        }
-                    }
+                    // dacă acelaşi “set” e deja în coadă cu FCost mai mic – îl ignorăm
+                    open.Enqueue(succ, succ.FCost);
                 }
             }
-
-            // Dacă openList s-a golit și n-am întors nimic, înseamnă că nu avem drum complet 
-            // (improbabil aici). Returnăm o listă goală.
             return new List<TaskModel>();
         }
 

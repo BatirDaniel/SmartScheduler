@@ -41,6 +41,14 @@ namespace SmartScheduler.WPF.Repository.Implementations
                          .FirstOrDefault(u => u.Username == username);
         }
 
+        public User? GetUserByEmail(string email)
+        {
+            return _context.Users
+                         .Include(u => u.Tasks)
+                         .Include(u => u.FreeTimeIntervals)
+                         .FirstOrDefault(u => u.Email == email);
+        }
+
         public User UpdateUser(User user)
         {
             _context.Users.Update(user);

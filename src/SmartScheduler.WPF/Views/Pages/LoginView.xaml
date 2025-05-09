@@ -2,11 +2,19 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:vm="clr-namespace:SmartScheduler.WPF.ViewModels"
       Title="Log in"
       ShowsNavigationUI="False"
       Background="{DynamicResource BackgroundBrush}"
       HorizontalAlignment="Center"
       VerticalAlignment="Center">
+    <Page.Resources>
+        <vm:LoginViewModel x:Key="LoginVM"/>
+    </Page.Resources>
+
+    <Page.DataContext>
+        <StaticResource ResourceKey="LoginVM"/>
+    </Page.DataContext>
     <Border Width="830" Height="500">
         <Grid Background="Transparent">
             <Grid.ColumnDefinitions>
@@ -44,7 +52,9 @@
                        Foreground="#555"
                        Margin="0,0,0,5" />
 
-                    <ui:TextBox PlaceholderText="Email"
+                    <ui:TextBox Name="email"
+                                Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="Email"
                         Width="360"
                         Margin="0,0,0,15"
                         Style="{DynamicResource FluentTextBox}" />
@@ -55,12 +65,16 @@
                                Margin="0,0,0,5"
                                Cursor="Hand" />
 
-                    <ui:PasswordBox PlaceholderText="Password"
+                    <ui:PasswordBox Name="password"
+                                    Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="Password"
                             Width="358"
                             Margin="0,0,0,15"
                             Style="{DynamicResource FluentTextBox}" />
 
-                    <ui:Button Content="Log in"
+                    <ui:Button Name="login_button"
+                               Command="{Binding LoginCommand}"
+                       Content="Log in"
                        Appearance="Primary"
                        Width="357"
                        Height="30"
