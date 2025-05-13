@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using SmartScheduler.WPF.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartScheduler.WPF.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartScheduler.WPF.Models
 {
@@ -18,6 +14,11 @@ namespace SmartScheduler.WPF.Models
         [Required]
         [MaxLength(100)]
         public string Title { get; set; } = string.Empty;
+
+        public DateTime? PlannedDate { get; set; }
+
+        [Required]
+        public TaskStatus Status { get; set; } = TaskStatus.Open;
 
         public string? Description { get; set; }
 
@@ -35,6 +36,7 @@ namespace SmartScheduler.WPF.Models
 
         // Legătura cu UserModel (FK)
         public int UserId { get; set; }
+
         public User? User { get; set; }
     }
 }

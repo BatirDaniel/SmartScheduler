@@ -14,94 +14,55 @@
                 <ColumnDefinition Width="217*" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Panel.ZIndex="1"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center" Height="404" Width="360">
-
+            <StackPanel Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="404" Width="360">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,40">
-                    <Image Source="/Assets/pngs/logo.png"
-                           Width="48"
-                           Height="48"
-                           Stretch="Uniform"
-                           Margin="0,0,10,0" />
-                    <TextBlock Text="Smart Scheduler"
-                       FontSize="24"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"
-                       Foreground="#333" />
+                    <Image Source="/Assets/pngs/logo.png" Width="48" Height="48" Stretch="Uniform" Margin="0,0,10,0" />
+                    <ui:TextBlock Text="Smart Scheduler" FontSize="24" FontWeight="Bold" VerticalAlignment="Center" Foreground="#333" />
                 </StackPanel>
 
-                <TextBlock Text="Log in"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   Foreground="#333" />
+                <ui:TextBlock Text="Log in" FontSize="28" FontWeight="Bold" Foreground="#333" />
 
-                <StackPanel Margin="0,20,0,0"
-                    Background="Transparent">
-
-                    <TextBlock Text="Email"
-                       FontSize="14"
-                       Foreground="#555"
-                       Margin="0,0,0,5" />
-
-                    <ui:TextBox PlaceholderText="Email"
-                        Width="360"
-                        Margin="0,0,0,15"
-                        Style="{DynamicResource FluentTextBox}" />
-
-                    <TextBlock Text="Password"
-                               FontSize="14"
-                               Foreground="#555"
-                               Margin="0,0,0,5"
-                               Cursor="Hand" />
-
-                    <ui:PasswordBox PlaceholderText="Password"
-                            Width="358"
-                            Margin="0,0,0,15"
-                            Style="{DynamicResource FluentTextBox}" />
-
-                    <ui:Button Content="Log in"
-                       Appearance="Primary"
-                       Width="357"
-                       Height="30"
-                       Margin="0,10,0,15"
-                       Focusable="True"
-                       Style="{DynamicResource PrimaryButton}" />
+                <StackPanel Margin="0,20,0,0" Background="Transparent">
+                    <ui:TextBlock Text="Email" Margin="0,0,0,5" Style="{DynamicResource FluentTextBlock}" />
+                    <ui:TextBox PlaceholderText="Email" Width="360" Margin="0,0,0,15" Style="{DynamicResource FluentTextBox}" />
+                    <ui:TextBlock Text="Password" Style="{DynamicResource FluentTextBlock}" Margin="0,0,0,5" Cursor="Hand" />
+                    <ui:PasswordBox PlaceholderText="Password" Width="358" Margin="0,0,0,15" Style="{DynamicResource FluentTextBox}" />
+                    <ui:Button Content="Log in" Appearance="Primary" Width="357" Height="30" Margin="0,10,0,15" Focusable="True" Style="{DynamicResource PrimaryButton}" />
 
                     <TextBlock Text="Forgot password?"
-                       Foreground="#666"
-                       FontSize="12"
-                       HorizontalAlignment="Right"
-                       Margin="0,0,0,5" />
+                               Foreground="#666"
+                               FontSize="12"
+                               HorizontalAlignment="Right"
+                               Margin="0,0,0,5" />
 
                     <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        Margin="0,20,0,0">
+                                HorizontalAlignment="Center"
+                                Margin="0,20,0,0">
                         <TextBlock Text="Don't have an account?"
-                           Foreground="#555"
-                           FontSize="12" />
+                                   Foreground="#555"
+                                   FontSize="12" />
                         <TextBlock Text=" " FontSize="12" />
                         <TextBlock Text="Register"
-                           Foreground="#5B78F6"
-                           FontSize="12"
-                           TextDecorations="Underline"
-                           Cursor="Hand"
-                           MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" />
+                                   Foreground="#5B78F6"
+                                   FontSize="12"
+                                   TextDecorations="Underline"
+                                   Cursor="Hand"
+                                   MouseLeftButtonDown="TextBlock_MouseLeftButtonDown" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
 
             <Grid Grid.Column="1"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Left"
-                Margin="0,-60,0,0"
-                Panel.ZIndex="1" Height="600" Width="394">
+                  VerticalAlignment="Top"
+                  HorizontalAlignment="Left"
+                  Margin="0,-60,0,0"
+                  Panel.ZIndex="1" Height="600" Width="394">
                 <Image Source="/Assets/pngs/login.png"
-               Stretch="Fill"
-               Width="586"
-               Height="437"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Top" Margin="0,110,0,0" />
+                       Stretch="Fill"
+                       Width="586"
+                       Height="437"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top" Margin="0,110,0,0" />
             </Grid>
         </Grid>
     </Border>
