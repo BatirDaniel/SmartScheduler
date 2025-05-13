@@ -1,11 +1,7 @@
 ﻿using SmartScheduler.WPF.Models;
-using SmartScheduler.WPF.Repository.Implementations;
 using SmartScheduler.WPF.Repository;
-using System;
+using SmartScheduler.WPF.Repository.Implementations;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartScheduler.WPF.Services
 {
@@ -19,7 +15,6 @@ namespace SmartScheduler.WPF.Services
             _userRepository = new UserRepository();
         }
 
-        // Metoda statică pentru obținerea instanței
         public static UserService GetInstance()
         {
             if (_instance == null)

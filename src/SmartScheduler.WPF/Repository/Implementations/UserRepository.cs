@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartScheduler.WPF.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartScheduler.WPF.Repository.Implementations
 {
@@ -19,40 +15,41 @@ namespace SmartScheduler.WPF.Repository.Implementations
 
         public User CreateUser(User user)
         {
-
             _context.Users.Add(user);
             _context.SaveChanges();
+
             return user;
         }
 
         public User? GetUserById(int userId)
         {
             return _context.Users
-                         .Include(u => u.Tasks)
-                         .Include(u => u.FreeTimeIntervals)
-                         .FirstOrDefault(u => u.Id == userId);
+                .Include(u => u.Tasks)
+                .Include(u => u.FreeTimeIntervals)
+                .FirstOrDefault(u => u.Id == userId);
         }
 
         public User? GetUserByUsername(string username)
         {
             return _context.Users
-                         .Include(u => u.Tasks)
-                         .Include(u => u.FreeTimeIntervals)
-                         .FirstOrDefault(u => u.Username == username);
+                .Include(u => u.Tasks)
+                .Include(u => u.FreeTimeIntervals)
+                .FirstOrDefault(u => u.Username == username);
         }
 
         public User? GetUserByEmail(string email)
         {
             return _context.Users
-                         .Include(u => u.Tasks)
-                         .Include(u => u.FreeTimeIntervals)
-                         .FirstOrDefault(u => u.Email == email);
+                .Include(u => u.Tasks)
+                .Include(u => u.FreeTimeIntervals)
+                .FirstOrDefault(u => u.Email == email);
         }
 
         public User UpdateUser(User user)
         {
             _context.Users.Update(user);
             _context.SaveChanges();
+
             return user;
         }
 
@@ -63,6 +60,7 @@ namespace SmartScheduler.WPF.Repository.Implementations
 
             _context.Users.Remove(user);
             _context.SaveChanges();
+
             return true;
         }
     }

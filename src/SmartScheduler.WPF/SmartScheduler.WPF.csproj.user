@@ -7,6 +7,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\Controls\CustomCalendar.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Modals\AddFreeTimeModal.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -28,7 +31,16 @@
     <Compile Update="Views\Pages\LoginView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\Pages\MainView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Pages\ProfileView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\Pages\RegisterView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Pages\SettingsView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\Pages\TasksView.xaml.cs">
@@ -43,6 +55,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\Themes\LightTheme.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Controls\CustomCalendar.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Modals\AddFreeTimeModal.xaml">
@@ -66,7 +81,16 @@
     <Page Update="Views\Pages\LoginView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Views\Pages\MainView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Pages\ProfileView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Views\Pages\RegisterView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\Pages\SettingsView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\Pages\TasksView.xaml">

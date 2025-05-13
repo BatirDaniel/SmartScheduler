@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="SmartScheduler"
         MinWidth="900"
-        MinHeight="600">
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource BackgroundBrush}">
 
     <Frame NavigationUIVisibility="Hidden" Source="Views/Pages/LoginView.xaml" />
 </Window>

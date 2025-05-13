@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartScheduler.WPF.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SmartScheduler.WPF.Repository.Implementations
 {
@@ -18,27 +20,30 @@ namespace SmartScheduler.WPF.Repository.Implementations
         {
             _context.Tasks.Add(task);
             _context.SaveChanges();
+
             return task;
         }
 
         public TaskModel? GetTaskById(int taskId)
         {
             return _context.Tasks
-                          .Include(t => t.User)
-                          .FirstOrDefault(t => t.Id == taskId);
+                .Include(t => t.User)
+                .FirstOrDefault(t => t.Id == taskId);
         }
 
-        public List<TaskModel> GetAllTasks()
+        public List<TaskModel> GetAllTasksByUserAndDay(int userId, DateTime? date)
         {
             return _context.Tasks
-                          .Include(t => t.User)
-                          .ToList();
+                .Include(t => t.User)
+                .Where(x => x.UserId == userId && x.DueDate.HasValue && x.DueDate.Value.Date == date)
+                .ToList();
         }
 
         public TaskModel UpdateTask(TaskModel task)
         {
             _context.Tasks.Update(task);
             _context.SaveChanges();
+
             return task;
         }
 
@@ -49,6 +54,7 @@ namespace SmartScheduler.WPF.Repository.Implementations
 
             _context.Tasks.Remove(taskToDelete);
             _context.SaveChanges();
+
             return true;
         }
 
@@ -57,14 +63,15 @@ namespace SmartScheduler.WPF.Repository.Implementations
         {
             _context.FreeTimeIntervals.Add(interval);
             _context.SaveChanges();
+
             return interval;
         }
 
         public List<FreeTimeInterval> GetFreeTimeIntervalsByUserId(int userId)
         {
             return _context.FreeTimeIntervals
-                          .Where(f => f.UserId == userId)
-                          .ToList();
+                .Where(f => f.UserId == userId)
+                .ToList();
         }
 
         public bool DeleteFreeTimeInterval(int intervalId)
@@ -74,6 +81,7 @@ namespace SmartScheduler.WPF.Repository.Implementations
 
             _context.FreeTimeIntervals.Remove(interval);
             _context.SaveChanges();
+
             return true;
         }
     }

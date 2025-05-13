@@ -83,6 +83,12 @@ namespace SmartScheduler.WPF.Migrations
                     b.Property<double>("RequiredHours")
                         .HasColumnType("REAL");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("TaskOrder")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)

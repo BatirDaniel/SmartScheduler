@@ -1,15 +1,11 @@
-﻿using SmartScheduler.WPF.Services;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows;
-using SmartScheduler.WPF.Models;
+﻿using SmartScheduler.WPF.Models;
+using SmartScheduler.WPF.Services;
+using SmartScheduler.WPF.Session;
 using SmartScheduler.WPF.Views.Pages;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Input;
 
 namespace SmartScheduler.WPF.ViewModels
 {
@@ -57,10 +53,11 @@ namespace SmartScheduler.WPF.ViewModels
                 return;
             }
 
-          
             if (user != null)
             {
-                NavigationService.Inst.Show(new DashboardView());
+                SessionManager.SetUser(user);
+
+                NavigationService.Inst.Show(new MainView());
                 ClearFields();
             }
 
@@ -74,9 +71,12 @@ namespace SmartScheduler.WPF.ViewModels
         }
 
         #region INotifyPropertyChanged
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
         private void OnPropertyChanged([CallerMemberName] string? p = null) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
-        #endregion
+
+        #endregion INotifyPropertyChanged
     }
 }

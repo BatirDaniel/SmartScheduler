@@ -4,13 +4,14 @@ using SmartScheduler.WPF.Services.Algorithms;
 using System;
 using System.Collections.Generic;
 
-
 namespace SmartScheduler.WPF.Services
 {
     public class SchedulingService
     {
         private static SchedulingService? _instance;
-        private SchedulingService() { }
+
+        private SchedulingService()
+        { }
 
         public static SchedulingService GetInstance()
         {
@@ -23,14 +24,14 @@ namespace SmartScheduler.WPF.Services
 
         /// <summary>
         ///  Metodă principală care, în funcție de algoritmul cerut, apelează logica respectivă.
-        ///  Returnează o listă de TaskModel în ordinea/structura "planificată" 
+        ///  Returnează o listă de TaskModel în ordinea/structura "planificată"
         ///  (sau un assignment vector, în cazul Hungarian).
-        ///  
+        ///
         ///  - tasks: lista de sarcini pe care vrem să le planificăm
         ///  - user: utilizatorul (pentru hobby, preferințe, etc.)
         ///  - maxHours: opțional, dacă vrem să limităm durata totală (folosit mai ales la Branch & Bound)
         /// </summary>
-        public object ScheduleTasks(SchedulingAlgorithm algorithm, List<TaskModel> tasks, User user, double? maxHours = null)
+        public List<TaskModel> ScheduleTasks(SchedulingAlgorithm algorithm, List<TaskModel> tasks, User user, double? maxHours = null)
         {
             switch (algorithm)
             {
@@ -49,9 +50,9 @@ namespace SmartScheduler.WPF.Services
         }
 
         /// <summary>
-        ///  1) Hungarian: 
-        ///     - generează o matrice de cost pentru (task vs. slot), 
-        ///       folosind HungarianAlgorithmService, 
+        ///  1) Hungarian:
+        ///     - generează o matrice de cost pentru (task vs. slot),
+        ///       folosind HungarianAlgorithmService,
         ///       scade costul pentru hobby-urile userului.
         ///     - returnează vectorul "assignment[i] = coloana".
         /// </summary>
@@ -115,4 +116,3 @@ namespace SmartScheduler.WPF.Services
         }
     }
 }
-

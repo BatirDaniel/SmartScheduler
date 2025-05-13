@@ -15,12 +15,12 @@ namespace SmartScheduler.WPF.Models
         [MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
-        public DateTime? PlannedDate { get; set; }
+        public string? Description { get; set; }
+
+        public int? TaskOrder { get; set; } = 0;
 
         [Required]
         public TaskStatus Status { get; set; } = TaskStatus.Open;
-
-        public string? Description { get; set; }
 
         [Required]
         public TaskPriority Priority { get; set; } = TaskPriority.Medium;

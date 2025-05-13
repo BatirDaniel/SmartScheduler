@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace SmartScheduler.WPF.Services
@@ -11,7 +6,10 @@ namespace SmartScheduler.WPF.Services
     public class NavigationService
     {
         private static readonly NavigationService _inst = new();
-        private NavigationService() { }
+
+        private NavigationService()
+        { }
+
         public static NavigationService Inst => _inst;
 
         public void Show(Page page)

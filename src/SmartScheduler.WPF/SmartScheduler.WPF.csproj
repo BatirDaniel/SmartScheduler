@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Controls\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Assets\pngs\calendar.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

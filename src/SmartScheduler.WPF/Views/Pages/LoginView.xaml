@@ -31,19 +31,19 @@
                 <ui:TextBlock Text="Log in" FontSize="28" FontWeight="Bold" Foreground="#333" />
 
                 <StackPanel Margin="0,20,0,0"
-                    Background="Transparent">
+                            Background="Transparent">
 
                     <TextBlock Text="Email"
-                       FontSize="14"
-                       Foreground="#555"
-                       Margin="0,0,0,5" />
+                               FontSize="14"
+                               Foreground="#555"
+                               Margin="0,0,0,5" />
 
                     <ui:TextBox Name="email"
                                 Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        PlaceholderText="Email"
-                        Width="360"
-                        Margin="0,0,0,15"
-                        Style="{DynamicResource FluentTextBox}" />
+                                PlaceholderText="Email"
+                                Width="360"
+                                Margin="0,0,0,15"
+                                Style="{DynamicResource FluentTextBox}" />
 
                     <TextBlock Text="Password"
                                FontSize="14"
@@ -53,20 +53,20 @@
 
                     <ui:PasswordBox Name="password"
                                     Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            PlaceholderText="Password"
-                            Width="358"
-                            Margin="0,0,0,15"
-                            Style="{DynamicResource FluentTextBox}" />
+                                    PlaceholderText="Password"
+                                    Width="358"
+                                    Margin="0,0,0,15"
+                                    Style="{DynamicResource FluentTextBox}" />
 
                     <ui:Button Name="login_button"
                                Command="{Binding LoginCommand}"
-                       Content="Log in"
-                       Appearance="Primary"
-                       Width="357"
-                       Height="30"
-                       Margin="0,10,0,15"
-                       Focusable="True"
-                       Style="{DynamicResource PrimaryButton}" />
+                               Content="Log in"
+                               Appearance="Primary"
+                               Width="357"
+                               Height="30"
+                               Margin="0,10,0,15"
+                               Focusable="True"
+                               Style="{DynamicResource PrimaryButton}" />
 
                     <TextBlock Text="Forgot password?"
                                Foreground="#666"

@@ -14,30 +14,30 @@ namespace SmartScheduler.Tests
         {
             // 3 task‑uri simple
             _tasks = new List<TaskModel>
-     {
-        new TaskModel { Id =  1, Title = "Jogging",            RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Fitness" },
-        new TaskModel { Id =  2, Title = "Read novel",         RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Reading" },
-        new TaskModel { Id =  3, Title = "Refactor code",      RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  },
-        new TaskModel { Id =  4, Title = "Yoga session",       RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Fitness" },
-        new TaskModel { Id =  5, Title = "Grocery shopping",   RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Errands" },
-        new TaskModel { Id =  6, Title = "Write blog post",    RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Writing" },
-        new TaskModel { Id =  7, Title = "Watch tutorial",     RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Learning"},
-        new TaskModel { Id =  8, Title = "Cook dinner",        RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Cooking" },
-        new TaskModel { Id =  9, Title = "Unit‑test cleanup",  RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  },
-        new TaskModel { Id = 10, Title = "Research topic",     RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Research"},
-        new TaskModel { Id = 11, Title = "Photography walk",   RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Photography"},
-        new TaskModel { Id = 12, Title = "Meditation",         RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Wellness"},
-        new TaskModel { Id = 13, Title = "Language practice",  RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Learning"},
-        new TaskModel { Id = 14, Title = "Database backup",    RequiredHours = 1, Priority = TaskPriority.High,   Category = "SysAdmin"},
-        new TaskModel { Id = 15, Title = "Plan vacation",      RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Planning"},
-        new TaskModel { Id = 16, Title = "Strength training",  RequiredHours = 1, Priority = TaskPriority.High,   Category = "Fitness" },
-        new TaskModel { Id = 17, Title = "Read research paper",RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Reading" },
-        new TaskModel { Id = 18, Title = "Design mock‑ups",    RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Design"  },
-        new TaskModel { Id = 19, Title = "Clean workspace",    RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Errands" },
-        new TaskModel { Id = 20, Title = "Update resume",      RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Writing" },
-        new TaskModel { Id = 21, Title = "Play guitar",        RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Music"   },
-        new TaskModel { Id = 22, Title = "Bug triage",         RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  }
-     };
+             {
+                new TaskModel { Id =  1, Title = "Jogging",            RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Fitness" },
+                new TaskModel { Id =  2, Title = "Read novel",         RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Reading" },
+                new TaskModel { Id =  3, Title = "Refactor code",      RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  },
+                new TaskModel { Id =  4, Title = "Yoga session",       RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Fitness" },
+                new TaskModel { Id =  5, Title = "Grocery shopping",   RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Errands" },
+                new TaskModel { Id =  6, Title = "Write blog post",    RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Writing" },
+                new TaskModel { Id =  7, Title = "Watch tutorial",     RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Learning"},
+                new TaskModel { Id =  8, Title = "Cook dinner",        RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Cooking" },
+                new TaskModel { Id =  9, Title = "Unit‑test cleanup",  RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  },
+                new TaskModel { Id = 10, Title = "Research topic",     RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Research"},
+                new TaskModel { Id = 11, Title = "Photography walk",   RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Photography"},
+                new TaskModel { Id = 12, Title = "Meditation",         RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Wellness"},
+                new TaskModel { Id = 13, Title = "Language practice",  RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Learning"},
+                new TaskModel { Id = 14, Title = "Database backup",    RequiredHours = 1, Priority = TaskPriority.High,   Category = "SysAdmin"},
+                new TaskModel { Id = 15, Title = "Plan vacation",      RequiredHours = 2, Priority = TaskPriority.Low,    Category = "Planning"},
+                new TaskModel { Id = 16, Title = "Strength training",  RequiredHours = 1, Priority = TaskPriority.High,   Category = "Fitness" },
+                new TaskModel { Id = 17, Title = "Read research paper",RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Reading" },
+                new TaskModel { Id = 18, Title = "Design mock‑ups",    RequiredHours = 2, Priority = TaskPriority.Medium, Category = "Design"  },
+                new TaskModel { Id = 19, Title = "Clean workspace",    RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Errands" },
+                new TaskModel { Id = 20, Title = "Update resume",      RequiredHours = 1, Priority = TaskPriority.Medium, Category = "Writing" },
+                new TaskModel { Id = 21, Title = "Play guitar",        RequiredHours = 1, Priority = TaskPriority.Low,    Category = "Music"   },
+                new TaskModel { Id = 22, Title = "Bug triage",         RequiredHours = 2, Priority = TaskPriority.High,   Category = "Coding"  }
+             };
 
             _user = new User
             {
@@ -149,11 +149,10 @@ namespace SmartScheduler.Tests
             var result = scheduler.ScheduleTasks(
                             SchedulingAlgorithm.AStar,
                             _tasks,
-                            _user);      
+                            _user);
 
             var ordered = Assert.IsType<List<TaskModel>>(result);
 
-            
             var hobbyCategories = _user.Hobbies!.Select(h => h.HobbyName);
 
             bool anyHobbyTask = ordered.Any(t =>
