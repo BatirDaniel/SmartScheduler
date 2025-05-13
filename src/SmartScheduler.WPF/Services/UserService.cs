@@ -65,10 +65,10 @@ namespace SmartScheduler.WPF.Services
         ///  Autentifică un utilizator pe baza username-ului și parolei.
         ///  Returnează user-ul dacă parola este corectă, altfel null.
         /// </summary>
-        public User? LoginUser(string username, string password)
+        public User? LoginUserByEmail(string email, string password)
         {
             // 1. Căutăm userul după username
-            var user = _userRepository.GetUserByUsername(username);
+            var user = _userRepository.GetUserByEmail(email);
             if (user == null)
             {
                 // Nu există user => login eșuat

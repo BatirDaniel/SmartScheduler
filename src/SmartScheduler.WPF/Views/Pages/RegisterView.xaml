@@ -3,10 +3,13 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:vm="clr-namespace:SmartScheduler.WPF.ViewModels"
       mc:Ignorable="d"
       Title="RegisterView"
       Background="{DynamicResource BackgroundBrush}">
+    <Page.DataContext>
+        <vm:RegisterViewModel/>
+    </Page.DataContext>
     <Border Width="830" Height="580">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -43,39 +46,49 @@
                                FontSize="14"
                                Foreground="#555"
                                Margin="0,0,0,5" />
-                    <ui:TextBox PlaceholderText="Username"
+                    <ui:TextBox Name="username"
+                                PlaceholderText="Username"
                                 Width="360"
                                 Margin="0,0,0,15"
+                                Text="{Binding Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Style="{DynamicResource FluentTextBox}" />
 
                     <TextBlock Text="Email"
                                FontSize="14"
                                Foreground="#555"
                                Margin="0,0,0,5" />
-                    <ui:TextBox PlaceholderText="Email"
+                    <ui:TextBox Name="email"
+                                PlaceholderText="Email"
+                                Text="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Width="360"
                                 Margin="0,0,0,15"
                                 Style="{DynamicResource FluentTextBox}" />
 
-                    <TextBlock Text="Password"
+                    <TextBlock Name="password"
+                               Text="Password"
                                FontSize="14"
                                Foreground="#555"
                                Margin="0,0,0,5" />
                     <ui:PasswordBox PlaceholderText="Password"
+                                    Password="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="0,0,0,15"
                                     Width="360"
                                     Style="{DynamicResource FluentTextBox}" />
 
-                    <TextBlock Text="Confirm Password"
+                    <TextBlock Name="confirm_password"
+                               Text="Confirm Password"
                                FontSize="14"
                                Foreground="#555"
                                Margin="0,0,0,5" />
                     <ui:PasswordBox PlaceholderText="Confirm Password"
+                                    Password="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="0,0,0,15"
                                     Width="360"
                                     Style="{DynamicResource FluentTextBox}" />
 
-                    <ui:Button Content="Register"
+                    <ui:Button Name="register_button"
+                               Command="{Binding RegisterCommand}"
+                               Content="Register"
                                Appearance="Primary"
                                Width="357"
                                Height="30"

@@ -55,12 +55,13 @@ namespace SmartScheduler.WPF.Services
         ///       scade costul pentru hobby-urile userului.
         ///     - returnează vectorul "assignment[i] = coloana".
         /// </summary>
-        private int[] ScheduleWithHungarian(List<TaskModel> tasks, User user)
+        private List<TaskModel> ScheduleWithHungarian(List<TaskModel> tasks, User user)
         {
             var hungarian = HungarianAlgorithmService.GetInstance();
+            var ordered = hungarian.GetTaskOrderWithHobbyBonus(tasks, user);
 
-            int[] assignment = hungarian.SolveWithHobbyBonus(tasks, user);
-            return assignment;
+            // extrage prefixul exact = FreeHoursPerDay
+            return FirstPrefixThatFits(ordered, user.FreeHoursPerDay);
         }
 
         /// <summary>
@@ -85,9 +86,32 @@ namespace SmartScheduler.WPF.Services
         private List<TaskModel> ScheduleWithAStar(List<TaskModel> tasks, User user)
         {
             var aStar = AStarService.GetInstance();
-            // Apelăm direct metoda "FindOptimalTaskOrderWithHobby"
-            var result = aStar.FindOptimalTaskOrderWithHobby(tasks, user);
-            return result;
+            var ordered = aStar.FindOptimalTaskOrderWithHobby(tasks, user);
+
+            return FirstPrefixThatFits(ordered, user.FreeHoursPerDay);
+        }
+
+        private static List<TaskModel> FirstPrefixThatFits(List<TaskModel> tasks, double targetHours, double tolerance = 1.0)          // ± 1 oră
+        {
+            var prefix = new List<TaskModel>();
+            double sum = 0;
+
+            foreach (var task in tasks)
+            {
+                sum += task.RequiredHours;
+                prefix.Add(task);
+
+                // potrivire în cadrul toleranţei
+                if (Math.Abs(sum - targetHours) <= tolerance)
+                    return prefix;
+
+                // dacă am depăşit „ţintă + toleranţă” nu mai are rost să continuăm
+                if (sum > targetHours + tolerance)
+                    break;
+            }
+
+            // nu există prefix exact / în toleranţă
+            return tasks;
         }
     }
 }

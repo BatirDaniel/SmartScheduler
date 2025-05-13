@@ -12,6 +12,7 @@ namespace SmartScheduler.WPF.Repository
         User CreateUser(User user);
         User? GetUserById(int userId);
         User? GetUserByUsername(string username);
+        User? GetUserByEmail(string username);
         User UpdateUser(User user);
         bool DeleteUser(int userId);
     }

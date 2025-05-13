@@ -290,5 +290,22 @@ namespace SmartScheduler.WPF.Services.Algorithms
             step = 4;
         }
         #endregion
+
+        public List<TaskModel> GetTaskOrderWithHobbyBonus(List<TaskModel> tasks, User user)
+        {
+            int[] assignment = SolveWithHobbyBonus(tasks, user);
+
+            // asamblăm perechi <slot, task>
+            var pairs = tasks
+                .Select((task, rowIndex) => new { Slot = assignment[rowIndex], Task = task })
+                .OrderBy(p => p.Slot)   // ordonăm după coloana/slot atribuit
+                .ToList();
+
+            // dacă există -1 (adică rând nealocat) îl excludem
+            return pairs
+                .Where(p => p.Slot >= 0)
+                .Select(p => p.Task)
+                .ToList();
+        }
     }
 }
