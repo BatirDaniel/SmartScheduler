@@ -1,6 +1,7 @@
 ﻿using SmartScheduler.WPF.Models;
 using SmartScheduler.WPF.Repository;
 using SmartScheduler.WPF.Repository.Implementations;
+using System;
 using System.Collections.Generic;
 
 namespace SmartScheduler.WPF.Services
@@ -9,10 +10,12 @@ namespace SmartScheduler.WPF.Services
     {
         private static UserService? _instance;
         private readonly IUserRepository _userRepository;
+        private readonly ITaskRepository _taskRepo;
 
         private UserService()
         {
             _userRepository = new UserRepository();
+            _taskRepo = new TaskRepository();
         }
 
         public static UserService GetInstance()
@@ -97,6 +100,11 @@ namespace SmartScheduler.WPF.Services
         public bool DeleteUser(int userId)
         {
             return _userRepository.DeleteUser(userId);
+        }
+
+        public void SaveTasksForUser(User user, IEnumerable<TaskModel> planned, DateTime selectedDate)
+        {
+            _taskRepo.AddOrUpdateTasks(user, planned,selectedDate);
         }
     }
 }

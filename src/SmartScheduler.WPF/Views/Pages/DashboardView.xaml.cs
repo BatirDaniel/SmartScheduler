@@ -22,6 +22,8 @@ namespace SmartScheduler.WPF.Views.Pages
     {
         private readonly TaskService _taskService = TaskService.GetInstance();
 
+        private readonly UserService _userService = UserService.GetInstance();
+
         private readonly SchedulingService _schedulingService = SchedulingService.GetInstance();
 
         private readonly SmartSchedulerRepository _smartSchedulerRepository = new SmartSchedulerRepository();
@@ -133,7 +135,11 @@ namespace SmartScheduler.WPF.Views.Pages
             else
             {
                 User? user = SessionManager.LoggedInUser;
-                tasks = _schedulingService.ScheduleTasks(SchedulingAlgorithm.AStar, tasks, user);
+                tasks = _schedulingService.ScheduleTasks(SchedulingAlgorithm.BranchAndBound, tasks, user);
+
+                if (isPlanning) {
+                    _userService.SaveTasksForUser(user, tasks, (DateTime)MainCalendar.SelectedDate);
+                }
 
                 List<TaskItemViewModel> plannedTasks = tasks
                     .Select(x => new TaskItemViewModel

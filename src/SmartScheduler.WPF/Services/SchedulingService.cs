@@ -3,6 +3,7 @@ using SmartScheduler.WPF.Models;
 using SmartScheduler.WPF.Services.Algorithms;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartScheduler.WPF.Services
 {
@@ -33,16 +34,17 @@ namespace SmartScheduler.WPF.Services
         /// </summary>
         public List<TaskModel> ScheduleTasks(SchedulingAlgorithm algorithm, List<TaskModel> tasks, User user, double? maxHours = null)
         {
+            var defaultTasks = TaskSeeder.GetCsvTasks();
             switch (algorithm)
             {
                 case SchedulingAlgorithm.Hungarian:
-                    return ScheduleWithHungarian(tasks, user);
+                    return ScheduleWithHungarian(defaultTasks, user);
 
                 case SchedulingAlgorithm.BranchAndBound:
-                    return ScheduleWithBranchAndBound(tasks, user, maxHours ?? 10);
+                    return ScheduleWithBranchAndBound(defaultTasks, user, maxHours ?? 6);
 
                 case SchedulingAlgorithm.AStar:
-                    return ScheduleWithAStar(tasks, user);
+                    return ScheduleWithAStar(defaultTasks, user);
 
                 default:
                     throw new NotImplementedException("Algoritm de planificare necunoscut.");
@@ -62,7 +64,7 @@ namespace SmartScheduler.WPF.Services
             var ordered = hungarian.GetTaskOrderWithHobbyBonus(tasks, user);
 
             // extrage prefixul exact = FreeHoursPerDay
-            return FirstPrefixThatFits(ordered, user.FreeHoursPerDay);
+            return ordered.Take(7).ToList();
         }
 
         /// <summary>
@@ -89,30 +91,8 @@ namespace SmartScheduler.WPF.Services
             var aStar = AStarService.GetInstance();
             var ordered = aStar.FindOptimalTaskOrderWithHobby(tasks, user);
 
-            return FirstPrefixThatFits(ordered, user.FreeHoursPerDay);
+            return ordered.Take(7).ToList();
         }
 
-        private static List<TaskModel> FirstPrefixThatFits(List<TaskModel> tasks, double targetHours, double tolerance = 1.0)          // ± 1 oră
-        {
-            var prefix = new List<TaskModel>();
-            double sum = 0;
-
-            foreach (var task in tasks)
-            {
-                sum += task.RequiredHours;
-                prefix.Add(task);
-
-                // potrivire în cadrul toleranţei
-                if (Math.Abs(sum - targetHours) <= tolerance)
-                    return prefix;
-
-                // dacă am depăşit „ţintă + toleranţă” nu mai are rost să continuăm
-                if (sum > targetHours + tolerance)
-                    break;
-            }
-
-            // nu există prefix exact / în toleranţă
-            return tasks;
-        }
     }
 }

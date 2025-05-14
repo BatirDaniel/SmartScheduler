@@ -31,79 +31,72 @@ namespace SmartScheduler.WPF.Services.Algorithms
         /// <param name="tasks">Lista completă de sarcini.</param>
         /// <param name="maxHours">Numărul maxim de ore disponibile.</param>
         /// <returns>Lista de sarcini alese de BnB pentru maximizarea priorității totale.</returns>
-        public List<TaskModel> FindBestTaskCombination(List<TaskModel> tasks, double maxHours, User user)
+        public List<TaskModel> FindBestTaskCombination(List<TaskModel> tasks,double maxHours,User user)
         {
-            // Sortăm sarcinile după "EffectivePriority" descrescător, 
-            // ca să fie B&B mai eficient
-            tasks.Sort((a, b) =>
-                 GetPriorityWithHobbyBonus(b, user).CompareTo(GetPriorityWithHobbyBonus(a, user))
-            );
+            // 1️⃣ – sortăm întâi după prioritate efectivă (ca şi până acum)
+            tasks = tasks
+                .OrderByDescending(t => GetPriorityWithHobbyBonus(t, user))
+                .ToList();
 
-            // Pentru Branch and Bound, vom stoca (într-o stivă / coadă) noduri ce conțin:
-            // - indexul următoarei sarcini
-            // - suma prioritatilor curente
-            // - orele folosite până acum
-            // - sarcinile selectate până acum
-            Stack<BnBNode> stack = new Stack<BnBNode>();
+            var rng = new Random();             // generator unic pe metodă
+            var stack = new Stack<BnBNode>();
+            var bestScore = 0;
+            var bestSets = new List<List<TaskModel>>();
 
-            BnBNode bestSolution = new BnBNode
+            stack.Push(new BnBNode
             {
-                CurrentPrioritySum = 0,
-                CurrentHoursSum = 0,
                 Index = 0,
-                SelectedTasks = new List<TaskModel>()
-            };
-            BnBNode bestFound = bestSolution;
-            stack.Push(bestSolution);
+                CurrentHoursSum = 0,
+                CurrentPrioritySum = 0,
+                SelectedTasks = new()
+            });
 
             while (stack.Count > 0)
             {
-                var currentNode = stack.Pop();
-                if (currentNode.Index >= tasks.Count)
+                var node = stack.Pop();
+
+                // 📈 actualizăm colecţia de soluţii optime
+                if (node.CurrentPrioritySum > bestScore)
                 {
-                    if (currentNode.CurrentPrioritySum > bestFound.CurrentPrioritySum)
+                    bestScore = node.CurrentPrioritySum;
+                    bestSets = new() { node.SelectedTasks };
+                }
+                else if (node.CurrentPrioritySum == bestScore)
+                {
+                    bestSets.Add(node.SelectedTasks);
+                }
+
+                // am parcurs toată lista → nimic de extins
+                if (node.Index >= tasks.Count) continue;
+
+                var task = tasks[node.Index];
+                var withBonus = GetPriorityWithHobbyBonus(task, user);
+                var hoursWithTask = node.CurrentHoursSum + task.RequiredHours;
+
+                // ➕ ramura „ia task‑ul”
+                if (hoursWithTask <= maxHours)
+                {
+                    stack.Push(new BnBNode
                     {
-                        bestFound = currentNode;
-                    }
-                    continue;
+                        Index = node.Index + 1,
+                        CurrentHoursSum = hoursWithTask,
+                        CurrentPrioritySum = node.CurrentPrioritySum + withBonus,
+                        SelectedTasks = new List<TaskModel>(node.SelectedTasks) { task }
+                    });
                 }
 
-                var task = tasks[currentNode.Index];
-                double newHours = currentNode.CurrentHoursSum + task.RequiredHours;
-                int effectivePriority = GetPriorityWithHobbyBonus(task, user);
-
-                // Ramură 1: includem taskul, dacă nu depășim orele
-                if (newHours <= maxHours)
+                // ➖ ramura „sari peste task”
+                stack.Push(new BnBNode
                 {
-                    var withTask = new BnBNode
-                    {
-                        Index = currentNode.Index + 1,
-                        CurrentHoursSum = newHours,
-                        CurrentPrioritySum = currentNode.CurrentPrioritySum + effectivePriority,
-                        SelectedTasks = new List<TaskModel>(currentNode.SelectedTasks)
-                    };
-                    withTask.SelectedTasks.Add(task);
-                    stack.Push(withTask);
-                }
-
-                // Ramură 2: excludem taskul
-                var withoutTask = new BnBNode
-                {
-                    Index = currentNode.Index + 1,
-                    CurrentHoursSum = currentNode.CurrentHoursSum,
-                    CurrentPrioritySum = currentNode.CurrentPrioritySum,
-                    SelectedTasks = new List<TaskModel>(currentNode.SelectedTasks)
-                };
-                stack.Push(withoutTask);
-
-                // Updatăm bestFound
-                if (currentNode.CurrentPrioritySum > bestFound.CurrentPrioritySum)
-                {
-                    bestFound = currentNode;
-                }
+                    Index = node.Index + 1,
+                    CurrentHoursSum = node.CurrentHoursSum,
+                    CurrentPrioritySum = node.CurrentPrioritySum,
+                    SelectedTasks = new List<TaskModel>(node.SelectedTasks)
+                });
             }
 
-            return bestFound.SelectedTasks;
+            // 2️⃣ – alegem la întâmplare una dintre cele optime
+            return bestSets[rng.Next(bestSets.Count)];
         }
 
         private int GetPriorityWithHobbyBonus(TaskModel task, User user)

@@ -11,6 +11,9 @@ namespace SmartScheduler.WPF.Services.Algorithms
     {
         private static HungarianAlgorithmService? _instance;
         private HungarianAlgorithmService() { }
+        private readonly Random _rng = new();
+
+        #region PUBLIC API
 
         public static HungarianAlgorithmService GetInstance()
         {
@@ -21,291 +24,246 @@ namespace SmartScheduler.WPF.Services.Algorithms
             return _instance;
         }
 
-        /// <summary>
-        ///  1) Metodă nouă: Generează o matrice de cost (n x n),
-        ///     luând în considerare hobby-urile userului (bonus).
-        ///  
-        ///  - i = index Task
-        ///  - j = index "slot" (tot atâtea sloturi cât taskuri, doar ca exemplu)
-        ///  - cost de bază = task.RequiredHours
-        ///  - dacă userul are un hobby egal cu task.Category, scădem 1 din cost
-        /// </summary>
-        public double[,] GenerateCostMatrixForTasksWithHobbyBonus(List<TaskModel> tasks, User user)
+        public List<TaskModel> GetTaskOrderWithHobbyBonus(
+            List<TaskModel> tasks,
+            User user)
+        {
+            if (tasks is null || tasks.Count == 0)
+                return new();
+
+            /* 1. Matrice de cost de bază */
+            var baseCost = GenerateCostMatrixForTasksWithHobbyBonus(tasks, user);
+            int n = tasks.Count;
+
+            /* 2. Permutăm aleator coloanele (sloturile) */
+            int[] colPerm = Enumerable.Range(0, n)
+                                      .OrderBy(_ => _rng.Next())
+                                      .ToArray();
+
+            double[,] permCost = new double[n, n];
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    permCost[i, j] = baseCost[i, colPerm[j]];
+
+            /* 3. Rezolvăm Hungarian pe matricea permutată */
+            int[] permAssignment = Solve(permCost);       // assignment in space “permutat”
+
+            /* 4. Mapăm assignment‑ul înapoi la sloturile originale */
+            int[] assignment = new int[n];
+            for (int i = 0; i < n; i++)
+                assignment[i] = colPerm[permAssignment[i]];
+
+            /* 5. Asamblăm lista de task‑uri ordonată după slot */
+            return tasks
+                .Select((task, row) => new { Slot = assignment[row], Task = task })
+                .Where(p => p.Slot >= 0)
+                .OrderBy(p => p.Slot)   // sloturile (0..n‑1) – dar acum într‑o ordine random
+                .Select(p => p.Task)
+                .ToList();
+        }
+
+#endregion
+        /*──────────────────────────────────────────*/
+
+        #region COST MATRIX  (cu bonus hobby)
+
+        private double[,] GenerateCostMatrixForTasksWithHobbyBonus(
+            List<TaskModel> tasks,
+            User user)
         {
             int n = tasks.Count;
-            double[,] costMatrix = new double[n, n];
+            var cost = new double[n, n];
 
             for (int i = 0; i < n; i++)
             {
-                var currentTask = tasks[i];
+                double baseCost = tasks[i].RequiredHours;
+                bool hobbyHit = user?.Hobbies?.Any(h =>
+                                   h.HobbyName.Equals(tasks[i].Category,
+                                   StringComparison.OrdinalIgnoreCase)) == true;
+
+                double finalCost = hobbyHit ? Math.Max(0, baseCost - 1) : baseCost;
+
                 for (int j = 0; j < n; j++)
-                {
-                    // cost de bază = RequiredHours
-                    double cost = currentTask.RequiredHours;
-
-                    // dacă userul are un hobby care corespunde cu Category
-                    bool matches = false;
-                    if (user.Hobbies != null && currentTask.Category != null)
-                    {
-                        matches = user.Hobbies.Any(h => h.HobbyName.Equals(currentTask.Category, StringComparison.OrdinalIgnoreCase));
-                    }
-
-                    if (matches)
-                    {
-                        // scădem 1 (poți folosi altă valoare)
-                        cost -= 1.0;
-                        if (cost < 0) cost = 0;
-                    }
-
-                    costMatrix[i, j] = cost;
-                }
+                    cost[i, j] = finalCost;
             }
 
-            return costMatrix;
+            return cost;
         }
 
-        /// <summary>
-        ///  2) Apel "convenience": Generează matricea cu hobby-bonus și rulează Solve(...).
-        ///     Returnează un array "assignment" unde assignment[i] = slotul (coloana) pentru taskul i.
-        /// </summary>
-        public int[] SolveWithHobbyBonus(List<TaskModel> tasks, User user)
-        {
-            var costMatrix = GenerateCostMatrixForTasksWithHobbyBonus(tasks, user);
-            return Solve(costMatrix);
-        }
+        #endregion
+
+        #region HUNGARIAN CORE  (n × n, cost minim)
 
         /// <summary>
-        ///  Metoda principală care rezolvă problema de assignare pe baza unei matrice de cost (cost minim).
-        ///  Returnează un array "assignment" unde assignment[i] = coloana la care e alocat rândul i.
+        /// Hungarian clasic (versiune simplificată). <br/>
+        /// Returnează assignment[i] = coloana pentru rândul i.
         /// </summary>
         public int[] Solve(double[,] costMatrix)
         {
             int n = costMatrix.GetLength(0);
-            int m = costMatrix.GetLength(1);
+            if (n != costMatrix.GetLength(1))
+                throw new ArgumentException("Hungarian: matricea trebuie să fie pătrată.");
 
-            if (n != m)
-            {
-                throw new ArgumentException("Algoritmul Hungarian necesită o matrice pătrată (n == m).");
-            }
+            /* 1. Copie */
+            var cost = (double[,])costMatrix.Clone();
 
-            // 1. Copiem matricea de cost, deoarece vom face transformări (reduceri)
-            double[,] cost = new double[n, n];
-            Array.Copy(costMatrix, cost, costMatrix.Length);
-
-            // 2. Reducere pe rânduri (Row Reduction)
+            /* 2. Reducere pe rânduri */
             for (int i = 0; i < n; i++)
             {
-                // Găsim minimul de pe rând
-                double rowMin = cost[i, 0];
+                double min = cost[i, 0];
                 for (int j = 1; j < n; j++)
-                {
-                    if (cost[i, j] < rowMin)
-                        rowMin = cost[i, j];
-                }
-                // Scădem minimul din fiecare element
+                    if (cost[i, j] < min) min = cost[i, j];
+
                 for (int j = 0; j < n; j++)
-                {
-                    cost[i, j] -= rowMin;
-                }
+                    cost[i, j] -= min;
             }
 
-            // 3. Reducere pe coloane (Column Reduction)
+            /* 3. Reducere pe coloane */
             for (int j = 0; j < n; j++)
             {
-                double colMin = cost[0, j];
+                double min = cost[0, j];
                 for (int i = 1; i < n; i++)
-                {
-                    if (cost[i, j] < colMin)
-                        colMin = cost[i, j];
-                }
+                    if (cost[i, j] < min) min = cost[i, j];
+
                 for (int i = 0; i < n; i++)
-                {
-                    cost[i, j] -= colMin;
-                }
+                    cost[i, j] -= min;
             }
 
-            // 4. Markare și acoperire (pas cu pas)
-            int[] result = new int[n]; // result[i] = coloana aleasă pentru rândul i
-            for (int i = 0; i < n; i++) result[i] = -1;
+            /* 4‑6. Mark/cover (simplificat) */
+            var marks = new int[n, n];   // 1 = star
+            var rowCover = new bool[n];
+            var colCover = new bool[n];
 
-            bool[] rowCover = new bool[n];
-            bool[] colCover = new bool[n];
-            int[,] marks = new int[n, n]; // 0 = nemarcat, 1 = star, 2 = prime
+            StarZeros(cost, marks, rowCover, colCover);
+            CoverStarColumns(marks, colCover);
 
-            int step = 0;
-            Step2(ref cost, ref marks, ref rowCover, ref colCover, ref step);
-
-            while (true)
+            while (CoveredColumnCount(colCover) < n)
             {
-                switch (step)
+                var zero = FindUncoveredZero(cost, rowCover, colCover);
+                while (zero == (-1, -1))
                 {
-                    case 2:
-                        Step2(ref cost, ref marks, ref rowCover, ref colCover, ref step);
-                        break;
-                    case 3:
-                        Step3(ref marks, ref colCover, ref step);
-                        break;
-                    case 4:
-                        Step4(ref cost, ref marks, ref rowCover, ref colCover, ref step);
-                        break;
-                    case 5:
-                        Step5(ref cost, ref marks, ref rowCover, ref colCover, ref step);
-                        break;
-                    case 6:
-                        Step6(ref cost, ref rowCover, ref colCover, ref step);
-                        break;
-                    default:
-                        // step 7 => gata
-                        goto assignment;
+                    AdjustMatrix(cost, rowCover, colCover);
+                    zero = FindUncoveredZero(cost, rowCover, colCover);
+                }
+
+                marks[zero.row, zero.col] = 2; // prime
+
+                int starCol = FindStarInRow(marks, zero.row);
+                if (starCol >= 0)
+                {
+                    rowCover[zero.row] = true;
+                    colCover[starCol] = false;
+                }
+                else
+                {
+                    AugmentPath(marks, zero);
+                    Array.Clear(rowCover, 0, n);
+                    Array.Clear(colCover, 0, n);
+                    CoverStarColumns(marks, colCover);
                 }
             }
 
-        assignment:
-            // Extragem assignment-ul
+            /* 7. Extragem assignment‑ul */
+            var result = Enumerable.Repeat(-1, n).ToArray();
             for (int i = 0; i < n; i++)
-            {
                 for (int j = 0; j < n; j++)
-                {
-                    if (marks[i, j] == 1)
-                    {
-                        result[i] = j;
-                        break;
-                    }
-                }
-            }
+                    if (marks[i, j] == 1) { result[i] = j; break; }
+
             return result;
         }
 
-        #region Implementări pas cu pas (simplificate)
-
-        // Step2: Star every zero in the matrix if possible
-        private void Step2(ref double[,] cost, ref int[,] marks, ref bool[] rowCover, ref bool[] colCover, ref int step)
+        /*──────── Helper‑uri minimal‑implementate (enough for cost-matrix egală pe coloane) ────────*/
+        private static void StarZeros(double[,] cost, int[,] marks, bool[] rowC, bool[] colC)
         {
             int n = cost.GetLength(0);
             for (int i = 0; i < n; i++)
-            {
-                rowCover[i] = false;
-            }
-            for (int j = 0; j < n; j++)
-            {
-                colCover[j] = false;
-            }
-
-            for (int i = 0; i < n; i++)
-            {
                 for (int j = 0; j < n; j++)
-                {
-                    if (cost[i, j] == 0 && !rowCover[i] && !colCover[j])
+                    if (cost[i, j] == 0 && !rowC[i] && !colC[j])
                     {
-                        marks[i, j] = 1; // star
-                        rowCover[i] = true;
-                        colCover[j] = true;
+                        marks[i, j] = 1;
+                        rowC[i] = colC[j] = true;
                     }
-                }
-            }
-
-            for (int i = 0; i < n; i++)
-            {
-                rowCover[i] = false;
-            }
-            for (int j = 0; j < n; j++)
-            {
-                colCover[j] = false;
-            }
-
-            step = 3;
+            Array.Clear(rowC); Array.Clear(colC);
         }
-
-        // Step3: Cover columns containing starred zeros
-        private void Step3(ref int[,] marks, ref bool[] colCover, ref int step)
+        private static void CoverStarColumns(int[,] marks, bool[] colC)
         {
             int n = marks.GetLength(0);
-            int colCount = 0;
             for (int j = 0; j < n; j++)
-            {
                 for (int i = 0; i < n; i++)
-                {
-                    if (marks[i, j] == 1)
-                    {
-                        colCover[j] = true;
-                        break;
-                    }
-                }
-            }
-            for (int j = 0; j < n; j++)
-            {
-                if (colCover[j]) colCount++;
-            }
-            if (colCount >= n)
-            {
-                step = 7; // done
-            }
-            else
-            {
-                step = 4;
-            }
+                    if (marks[i, j] == 1) { colC[j] = true; break; }
         }
-
-        // Step4 & Step5 sunt parțial implementate (simplificate)
-        private void Step4(ref double[,] cost, ref int[,] marks, ref bool[] rowCover, ref bool[] colCover, ref int step)
-        {
-            step = 5; // Simplificat
-        }
-
-        private void Step5(ref double[,] cost, ref int[,] marks, ref bool[] rowCover, ref bool[] colCover, ref int step)
-        {
-            step = 6; // Simplificat
-        }
-
-        // Step6: Ajustăm valorile din matrice
-        private void Step6(ref double[,] cost, ref bool[] rowCover, ref bool[] colCover, ref int step)
+        private static int CoveredColumnCount(bool[] colC) => colC.Count(c => c);
+        private static (int row, int col) FindUncoveredZero(double[,] cost, bool[] rowC, bool[] colC)
         {
             int n = cost.GetLength(0);
-            double minVal = double.MaxValue;
             for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (!rowCover[i] && !colCover[j] && cost[i, j] < minVal)
-                    {
-                        minVal = cost[i, j];
-                    }
-                }
-            }
-
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (rowCover[i])
-                    {
-                        cost[i, j] += minVal;
-                    }
-                    if (!colCover[j])
-                    {
-                        cost[i, j] -= minVal;
-                    }
-                }
-            }
-            step = 4;
+                if (!rowC[i])
+                    for (int j = 0; j < n; j++)
+                        if (!colC[j] && cost[i, j] == 0) return (i, j);
+            return (-1, -1);
         }
-        #endregion
-
-        public List<TaskModel> GetTaskOrderWithHobbyBonus(List<TaskModel> tasks, User user)
+        private static int FindStarInRow(int[,] marks, int row)
         {
-            int[] assignment = SolveWithHobbyBonus(tasks, user);
-
-            // asamblăm perechi <slot, task>
-            var pairs = tasks
-                .Select((task, rowIndex) => new { Slot = assignment[rowIndex], Task = task })
-                .OrderBy(p => p.Slot)   // ordonăm după coloana/slot atribuit
-                .ToList();
-
-            // dacă există -1 (adică rând nealocat) îl excludem
-            return pairs
-                .Where(p => p.Slot >= 0)
-                .Select(p => p.Task)
-                .ToList();
+            int n = marks.GetLength(1);
+            for (int j = 0; j < n; j++)
+                if (marks[row, j] == 1) return j;
+            return -1;
         }
+        private static void AugmentPath(int[,] marks, (int row, int col) zeroPrime)
+        {
+            int n = marks.GetLength(0);
+            var path = new List<(int r, int c)> { zeroPrime };
+
+            while (true)
+            {
+                int starRow = path.Last().r;
+                int starCol = FindStarInColumn(marks, path.Last().c);
+                if (starCol == -1) break;
+                path.Add((starCol, path.Last().c));
+
+                int primeCol = FindPrimeInRow(marks, starCol);
+                path.Add((starCol, primeCol));
+            }
+
+            foreach (var (r, c) in path)
+                marks[r, c] = marks[r, c] == 1 ? 0 : 1;
+
+            /* ștergem toate prime‑urile */
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    if (marks[i, j] == 2) marks[i, j] = 0;
+        }
+        private static int FindStarInColumn(int[,] marks, int col)
+        {
+            int n = marks.GetLength(0);
+            for (int i = 0; i < n; i++)
+                if (marks[i, col] == 1) return i;
+            return -1;
+        }
+        private static int FindPrimeInRow(int[,] marks, int row)
+        {
+            int n = marks.GetLength(1);
+            for (int j = 0; j < n; j++)
+                if (marks[row, j] == 2) return j;
+            return -1;
+        }
+        private static void AdjustMatrix(double[,] cost, bool[] rowC, bool[] colC)
+        {
+            int n = cost.GetLength(0);
+            double min = double.MaxValue;
+            for (int i = 0; i < n; i++)
+                if (!rowC[i])
+                    for (int j = 0; j < n; j++)
+                        if (!colC[j] && cost[i, j] < min) min = cost[i, j];
+
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                {
+                    if (rowC[i]) cost[i, j] += min;
+                    if (!colC[j]) cost[i, j] -= min;
+                }
+        }
+
+        #endregion
     }
 }

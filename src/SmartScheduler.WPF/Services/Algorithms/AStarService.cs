@@ -23,129 +23,128 @@ namespace SmartScheduler.WPF.Services.Algorithms
             return _instance;
         }
 
-        /// <summary>
-        ///  Metodă principală: Găsește o "ordonare" a sarcinilor care minimizează 
-        ///  costul total = (RequiredHours - bonusHobby).
-        ///  - Bonus: Dacă userul are un hobby = task.Category, scadem 1 oră din cost (minim 0).
-        ///  
-        ///  Returnează lista de TaskModel în ordinea în care A* le "planifică".
-        /// </summary>
-        /// <param name="allTasks">Sarcinile de planificat (ex. toate tasks din DB)</param>
-        /// <param name="user">Utilizatorul curent (pentru a vedea hobby-urile)</param>
-        /// <returns>O listă de TaskModel în ordinea optimă găsită</returns>
+        /*────────────  CONFIG  ────────────*/
+        private const int BeamWidth = 200;   // ↔ precizie vs. performanță
+        private const double Noise = 0.001; // ↔ varietate < 1 sec
+        private readonly Random _rng = new();
+
+        /*────────────  API  ────────────*/
         public List<TaskModel> FindOptimalTaskOrderWithHobby(
-             List<TaskModel> allTasks, User user)
+            List<TaskModel> allTasks,
+            User user)
         {
-            // nod start
+            if (allTasks is null || allTasks.Count == 0)
+                return new();
+
+            // Ordine stabilă → Contains funcționează corect
+            allTasks = allTasks.OrderBy(t => t.Id).ToList();
+
+            /* START NODE */
             var start = new AStarNode
             {
-                TasksDone = new List<TaskModel>(),
+                TasksDone = new(),
                 GCost = 0,
-                HCost = CalculateHeuristic(allTasks, new List<TaskModel>(), user)
+                HCost = CalculateHeuristic(allTasks, Array.Empty<TaskModel>(), user)
             };
             start.CalculateFCost();
 
-            // ---------- PriorityQueue în loc de List + Sort -----------------
-            var open = new PriorityQueue<AStarNode, double>();
-            open.Enqueue(start, start.FCost);
+            /* BEAM SEARCH pe niveluri (număr task‑uri completate) */
+            var currentLevel = new List<AStarNode> { start };
+            AStarNode? bestComplete = null;
 
-            var closed = new HashSet<AStarNode>(new AStarNodeComparer());
-
-            while (open.Count > 0)
+            while (currentLevel.Count > 0)
             {
-                var current = open.Dequeue();
+                var nextLevel = new List<AStarNode>();
 
-                if (current.TasksDone.Count == allTasks.Count)
-                    return current.TasksDone;
-
-                closed.Add(current);
-
-                // succesorii
-                foreach (var t in allTasks.Where(t => !current.TasksDone.Contains(t)))
+                foreach (var node in currentLevel)
                 {
-                    var newDone = current.TasksDone.Append(t).ToList();
-
-                    var succ = new AStarNode
+                    /* Soluție completă? */
+                    if (node.TasksDone.Count == allTasks.Count)
                     {
-                        TasksDone = newDone,
-                        GCost = current.GCost + CalculateCost(t, user),
-                        HCost = CalculateHeuristic(allTasks, newDone, user),
-                        Parent = current
-                    };
-                    succ.CalculateFCost();
+                        if (bestComplete == null ||
+                            node.FCost < bestComplete.FCost)
+                            bestComplete = node;
+                        continue;
+                    }
 
-                    if (closed.Contains(succ)) continue;
+                    /* Generează succesorii – shuffle pentru aleator */
+                    var remaining = allTasks
+                        .Where(t => !node.TasksDone.Contains(t))
+                        .OrderBy(_ => _rng.Next());
 
-                    // dacă acelaşi “set” e deja în coadă cu FCost mai mic – îl ignorăm
-                    open.Enqueue(succ, succ.FCost);
+                    foreach (var task in remaining)
+                    {
+                        var withTask = new List<TaskModel>(node.TasksDone) { task };
+
+                        var succ = new AStarNode
+                        {
+                            TasksDone = withTask,
+                            GCost = node.GCost + CalculateCost(task, user),
+                            HCost = CalculateHeuristic(allTasks, withTask, user),
+                            Parent = node
+                        };
+                        succ.CalculateFCost();
+
+                        /* Zgomot mic la FCost pentru varietate */
+                        succ.FCost += _rng.NextDouble() * Noise;
+
+                        nextLevel.Add(succ);
+                    }
                 }
+
+                /* Ținem doar cele mai bune BeamWidth noduri */
+                nextLevel.Sort((a, b) => a.FCost.CompareTo(b.FCost));
+                if (nextLevel.Count > BeamWidth)
+                    nextLevel = nextLevel.Take(BeamWidth).ToList();
+
+                currentLevel = nextLevel;
             }
-            return new List<TaskModel>();
+
+            return bestComplete?.TasksDone ?? new();
         }
 
-        /// <summary>
-        ///  Calculează costul real pentru un Task,
-        ///  scăzând 1 oră dacă hobby-ul userului se potrivește cu task.Category.
-        ///  Minim 0.
-        /// </summary>
+        /*────────────  COSTURI & HEURISTICĂ  ────────────*/
         private double CalculateCost(TaskModel task, User user)
         {
             double cost = task.RequiredHours;
-            if (!string.IsNullOrEmpty(task.Category)
-                && user.Hobbies != null
-                && user.Hobbies.Any(h =>
-                        h.HobbyName.Equals(task.Category, StringComparison.OrdinalIgnoreCase)))
+
+            if (!string.IsNullOrWhiteSpace(task.Category) &&
+                user?.Hobbies?.Any(h =>
+                    h.HobbyName.Equals(task.Category, StringComparison.OrdinalIgnoreCase)) == true)
             {
-                cost -= 1;
-                if (cost < 0) cost = 0;
+                cost = Math.Max(0, cost - 1); // bonus hobby
             }
+
+            /* mic zgomot ±Noise/2 pentru diversitate */
+            cost += (_rng.NextDouble() - 0.5) * Noise;
+            if (cost < 0) cost = 0;
             return cost;
         }
 
-        /// <summary>
-        ///  Calculează euristica (HCost):
-        ///  Presupunem că, pentru task-urile încă neefectuate, 
-        ///  costul total e "sumă costurilor" (ore - bonus) 
-        ///  (adică un best-case scenario).
-        /// </summary>
-        private double CalculateHeuristic(List<TaskModel> allTasks, List<TaskModel> done, User user)
+        private double CalculateHeuristic(
+            IReadOnlyList<TaskModel> all,
+            IReadOnlyCollection<TaskModel> done,
+            User user)
         {
-            // task-urile rămase = allTasks - done
-            var remaining = allTasks.Where(t => !done.Contains(t));
-            double sum = 0;
-            foreach (var task in remaining)
-            {
-                sum += CalculateCost(task, user);
-            }
+            var remaining = all.Where(t => !done.Contains(t));
+            double sum = remaining.Sum(t => CalculateCost(t, user));
+
+            /* admisibilă & strict mai mică -->
+               scădem epsilon * nrTaskuriRămase */
+            sum = Math.Max(0, sum - remaining.Count() * Noise);
             return sum;
         }
 
-        #region Clase interne
-
-        /// <summary>
-        ///  Comparer pentru a defini "egalitatea" a două noduri:
-        ///  - Două noduri sunt egale dacă au aceleași Task-uri finalizate (ignorăm ordinea).
-        /// </summary>
-        private class AStarNodeComparer : IEqualityComparer<AStarNode>
+        /*────────────  NODE  ────────────*/
+        private sealed class AStarNode
         {
-            public bool Equals(AStarNode? x, AStarNode? y)
-            {
-                if (x == null || y == null) return false;
-                if (x.TasksDone.Count != y.TasksDone.Count) return false;
+            public List<TaskModel> TasksDone { get; init; } = new();
+            public double GCost { get; init; }      // cost real acumulat
+            public double HCost { get; init; }      // euristică
+            public double FCost { get; set; }       // total (G+H(+noise))
+            public AStarNode? Parent { get; init; }
 
-                // Verificăm setul de ID-uri
-                var xIds = x.TasksDone.Select(t => t.Id).OrderBy(id => id).ToArray();
-                var yIds = y.TasksDone.Select(t => t.Id).OrderBy(id => id).ToArray();
-                return xIds.SequenceEqual(yIds);
-            }
-
-            public int GetHashCode(AStarNode obj)
-            {
-                // Suma ID-urilor e un hash simplu
-                int sum = obj.TasksDone.Sum(t => t.Id);
-                return sum.GetHashCode();
-            }
+            public void CalculateFCost() => FCost = GCost + HCost;
         }
-        #endregion
     }
 }
