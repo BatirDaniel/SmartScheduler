@@ -32,7 +32,7 @@ namespace SmartScheduler.WPF.Views.Pages
 
         private void hobbiesBtn_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new HobbiesView());
+            MainFrame.Navigate(new HobbiesView());
         }
 
         private void settingsBtn_Click(object sender, RoutedEventArgs e)
