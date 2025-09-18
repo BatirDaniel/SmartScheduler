@@ -1,0 +1,96 @@
+﻿<Page
+    x:Class="SmartScheduler.WPF.Views.Pages.MainView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="MainView"
+    Background="{DynamicResource BackgroundBrush}">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource PrimaryBrush}">
+            <StackPanel Margin="16" VerticalAlignment="Stretch">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,0,0,24">
+                    <Image Source="/Assets/pngs/logo.png"
+                           Width="48" Height="48"
+                           Margin="0,0,8,0" />
+                    <TextBlock Text="SmartScheduler"
+                               FontSize="20" FontWeight="Bold"
+                               Foreground="{StaticResource OnPrimaryBrush}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <Button Name="dashboardBtn" Style="{StaticResource NavButtonStyle}" Click="dashboardBtn_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE80F;"
+                                   Style="{DynamicResource NavIconStyle}" />
+                        <TextBlock Text="Dashboard"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                    </StackPanel>
+                </Button>
+                <Button Name="tasksBtn" Style="{StaticResource NavButtonStyle}" Click="tasksBtn_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{DynamicResource NavIconStyle}"
+                                   Text="&#xE8B5;" />
+                        <TextBlock Text="Tasks"
+                                   Style="{DynamicResource NavTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="freeTimeBtn" Style="{StaticResource NavButtonStyle}" Click="freeTimeBtn_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{DynamicResource NavIconStyle}"
+                                   Text="&#xE121;" />
+                        <TextBlock Text="Free Time"
+                                   Style="{DynamicResource NavTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="hobbiesBtn" Style="{StaticResource NavButtonStyle}" Click="hobbiesBtn_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{DynamicResource NavIconStyle}"
+                                   Text="&#xE7C5;" />
+                        <TextBlock Text="Hobbies"
+                                   Style="{DynamicResource NavTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="settingsBtn" Style="{StaticResource NavButtonStyle}" Click="settingsBtn_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{DynamicResource NavIconStyle}"
+                                   Text="&#xE713;" />
+                        <TextBlock Text="Settings"
+                                   Style="{DynamicResource NavTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="profileBtn" Style="{StaticResource NavButtonStyle}" Click="profileBtn_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{DynamicResource NavIconStyle}"
+                                   Text="&#xE77B;" />
+                        <TextBlock Text="Profile"
+                                   Style="{DynamicResource NavTextBlockStyle}" />
+                    </StackPanel>
+                </Button>
+
+                <StackPanel VerticalAlignment="Bottom" Margin="0 230 0 0">
+                    <Button Name="logoutBtn" Style="{StaticResource NavButtonStyle}" Click="logoutBtn_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{DynamicResource NavIconStyle}"
+                                       Text="&#xF3B1;" />
+                            <TextBlock Text="Logout"
+                                       Style="{DynamicResource NavTextBlockStyle}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Frame x:Name="MainFrame"
+               Grid.Column="1"
+               NavigationUIVisibility="Hidden"
+               Background="{DynamicResource BackgroundBrush}" />
+    </Grid>
+</Page>
